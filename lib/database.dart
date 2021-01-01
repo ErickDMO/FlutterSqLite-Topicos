@@ -36,7 +36,7 @@ class TaskDatabase{
       onCreate:(Database db, int version){
         db.execute("CREATE TABLE tasks (id INTEGER PRIMARY KEY, name TEXT NOT NULL, direction TEXT NOT NULL, phone TEXT NOT NULL)");
       }
-    )
+    );
   }
 
   insert(Task task) async {

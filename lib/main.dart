@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:register_person/database.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,6 +24,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  TaskDatabase db = TaskDatabase();
   List<String> _task = [];
 
   @override
@@ -31,8 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: FlutterBuilder(
-        futere: db.initDB(),
+      body: FutureBuilder(
+        future: db.initDB(),
         builder: (BuildContext context, snapshot){
           if(snapshot.connectionState == ConnectionState.done){
             return _showList(context);
@@ -50,19 +52,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
-
-
-
-
   _showList(BuildContext context){
-    return FlutterBuilder(
-      futere: db.getAllTasks();
-      builder: (){
+    return FutureBuilder(
+      future: db.getAllTasks(),
+      initialData: List<Task>(),
+      builder: (BuildContext, AsyncSnapshot<List<Task>> snapshot){
         if(snapshot.hasData){
           return ListView(
             children: <Widget>[
-              for(Task task in snapshot.data) ListTitle(title: Text(task.name)), ListTitle(title: Text(task.direction)), ListTitle(title: Text(task.phone))
+              for(Task task in snapshot.data)
+                ListTile(title: Text(task.name+"="+task.direction+"="+task.phone))
             ],
           );
         }else{
@@ -77,19 +76,19 @@ class _MyHomePageState extends State<MyHomePage> {
   _addTask(){
     showDialog(
       context: context,
-      build: (context){
+      builder: (context){
         return SimpleDialog(
           children: <Widget>[
             TextField(
               decoration:InputDecoration(icon: Icon(Icons.add_circle_outline)),
               onSubmitted: (text){
                 setState((){
-                  var task = Task(text, Direccion, +591);
+                  var task = Task(text, "Direccion", "+591");
                   db.insert(task);
                   Navigator.pop(context);
                 });
               },
-            );
+            ),
           ],
         );
       },
